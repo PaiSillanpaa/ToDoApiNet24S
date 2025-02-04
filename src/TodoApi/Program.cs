@@ -16,9 +16,9 @@ internal class Program
         .ReadFrom.Configuration(configuration)
         .CreateLogger();
 
-        logger.Error("Katastrofin ainekset ilmassa");
-        logger.Warning("Jos mahdollista,älä lähde ulos tänään");
-        logger.Information("Tällainen sää tänään");
+        logger.Error("Noni, joku mokas jotain ja nyt ei mikään toimi.");
+        logger.Warning("Jep, joku juttu kytee jossain.");
+        logger.Information("Ei mitään uutta auringon alla.");
 
         var builder = WebApplication.CreateBuilder(args);
 

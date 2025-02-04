@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Serilog;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using TodoApi.Models;
 
 namespace TodoApi.Controllers
@@ -14,10 +16,12 @@ namespace TodoApi.Controllers
     public class TodoItemsController : ControllerBase
     {
         private readonly TodoContext _context;
+        private readonly ILogger<TodoItemsController> _logger;
 
-        public TodoItemsController(TodoContext context)
+        public TodoItemsController(TodoContext context, ILogger<TodoItemsController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: api/TodoItems
@@ -35,12 +39,13 @@ namespace TodoApi.Controllers
 
             if (todoItem == null)
             {
+                _logger.LogWarning($"Joku yritti hakea TodoItemia ID:llä {id}, mutta sitä ei löytynyt.");
                 return NotFound();
             }
 
+            _logger.LogInformation($"TodoItem haettiin onnistuneesti ID:llä {id}.");
             return todoItem;
         }
-
         // PUT: api/TodoItems/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -48,6 +53,7 @@ namespace TodoApi.Controllers
         {
             if (id != todoItem.Id)
             {
+                _logger.LogWarning($"Käyttäjä yritti päivittää TodoItemia ID:llä {id}, mutta ID ei vastannut pyynnön dataa ({todoItem.Id}).");
                 return BadRequest();
             }
 
@@ -56,22 +62,24 @@ namespace TodoApi.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                _logger.LogInformation($"TodoItem ID:llä {id} päivitettiin onnistuneesti.");
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!TodoItemExists(id))
                 {
+                    _logger.LogWarning($"TodoItem ID:llä {id} ei löytynyt, päivitys epäonnistui.");
                     return NotFound();
                 }
                 else
                 {
+                    _logger.LogError($"Tuntematon virhe päivitettäessä TodoItemia ID:llä {id}.");
                     throw;
                 }
             }
 
             return NoContent();
         }
-
         // POST: api/TodoItems
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -80,9 +88,10 @@ namespace TodoApi.Controllers
             _context.TodoItems.Add(todoItem);
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation($"Uusi TodoItem luotu ID:llä {todoItem.Id}.");
+
             return CreatedAtAction(nameof(GetTodoItem), new { id = todoItem.Id }, todoItem);
         }
-
         // DELETE: api/TodoItems/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTodoItem(long id)
@@ -90,15 +99,17 @@ namespace TodoApi.Controllers
             var todoItem = await _context.TodoItems.FindAsync(id);
             if (todoItem == null)
             {
+                _logger.LogWarning($"Joku yritti poistaa TodoItemin ID:llä {id}, mutta sitä ei löytynyt.");
                 return NotFound();
             }
 
             _context.TodoItems.Remove(todoItem);
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation($"TodoItem ID:llä {id} poistettiin onnistuneesti.");
+
             return NoContent();
         }
-
         private bool TodoItemExists(long id)
         {
             return _context.TodoItems.Any(e => e.Id == id);
