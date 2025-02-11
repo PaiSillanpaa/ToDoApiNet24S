@@ -80,7 +80,7 @@ namespace PasswordApi.Controllers
             _context.PasswordItems.Add(passwordItem);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPasswordItem", new { id = passwordItem.Id }, passwordItem);
+            return CreatedAtAction(nameof(GetPasswordItem), new { id = passwordItem.Id }, passwordItem);
         }
 
         // DELETE: api/PasswordItem/5
