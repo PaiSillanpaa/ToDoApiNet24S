@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PasswordApi.Models;
 
 namespace PasswordApi.Models;
 
@@ -9,5 +10,5 @@ public class PasswordContext : DbContext
     {
     }
 
-    public DbSet<PasswordItem> PasswordItemsItems { get; set; } = null!;
+    public DbSet<PasswordItem> PasswordItems { get; set; } = null!;
 }
