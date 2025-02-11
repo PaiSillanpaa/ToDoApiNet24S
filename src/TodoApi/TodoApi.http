@@ -10,10 +10,14 @@
 # Select request / command
 # and press Command + Shift + P: Rest Client: Send Request
 GET http://localhost:5059/api/todoitems
+GET http://localhost:5059/weatherforecast
+GET http://localhost:5059/swagger
+
+
 
 
 # Simple post
-POST https://localhost:5059/api/todoitems
+POST http://localhost:5059/api/todoitems
 Content-Type: application/json
 
 {
