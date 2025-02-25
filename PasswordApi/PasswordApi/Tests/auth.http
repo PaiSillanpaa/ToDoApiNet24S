@@ -1,0 +1,32 @@
+### Tarkista palvelimen tila
+GET https://localhost:7240/health
+
+### Rekisteröidy uutena käyttäjänä
+POST https://localhost:7240/api/auth/register
+Content-Type: application/json
+
+{
+    "username": "testuser",
+    "password": "TestPassword123!"
+}
+
+### Kirjaudu sisään
+POST https://localhost:7240/api/auth/login
+Content-Type: application/json
+
+{
+    "username": "testuser",
+    "password": "TestPassword123!"
+}
+
+### Kirjaudu väärällä salasanalla (pitäisi epäonnistua)
+POST https://localhost:7240/api/auth/login
+Content-Type: application/json
+
+{
+    "username": "testuser",
+    "password": "wrongpassword"
+}
+
+### Tarkista CORS-asetukset (Options-pyyntö)
+OPTIONS https://localhost:7240/api/auth/login 

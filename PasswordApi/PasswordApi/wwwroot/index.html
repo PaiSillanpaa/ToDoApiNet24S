@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Password API Testi</title>
+    <style>
+      .menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: #f0f0f0;
+        padding: 10px;
+        display: none;
+      }
+      .menu.active {
+        display: block;
+      }
+      .shortcut-hint {
+        color: #666;
+        font-size: 0.8em;
+      }
+    </style>
+  </head>
+  <bod>
+    <div class="menu" id="menu">
+      <div>Explorer (←)</div>
+      <div>Search (Ctrl+F)</div>
+      <div>Test All (Ctrl+T)</div>
+    </div>
+
+    <h2>Kirjautuminen</h2>
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Käyttäjätunnus" />
+      <input type="password" id="password" placeholder="Salasana" />
+      <button type="submit" accesskey="l">Kirjaudu (Alt+L)</button>
+    </form>
+
+    <h2>Rekisteröityminen</h2>
+    <form id="registerForm">
+      <input type="text" id="regUsername" placeholder="Käyttäjätunnus" />
+      <input type="password" id="regPassword" placeholder="Salasana" />
+      <button type="submit" accesskey="r">Rekisteröidy (Alt+R)</button>
+    </form>
+
+    <div id="testResults"></div>
+
+    <script>
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const response = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: document.getElementById("username").value,
+              password: document.getElementById("password").value,
+            }),
+          });
+          alert(
+            response.ok
+              ? "Kirjautuminen onnistui!"
+              : "Kirjautuminen epäonnistui!"
+          );
+        });
+
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const response = await fetch("/api/auth/register", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: document.getElementById("regUsername").value,
+              password: document.getElementById("regPassword").value,
+            }),
+          });
+          alert(
+            response.ok
+              ? "Rekisteröityminen onnistui!"
+              : "Rekisteröityminen epäonnistui!"
+          );
+        });
+
+      // Näppäinkomentojen käsittely
+      document.addEventListener("keydown", async (e) => {
+        // Vasen nuoli näyttää/piilottaa valikon
+        if (e.key === "ArrowLeft") {
+          const menu = document.getElementById("menu");
+          menu.classList.toggle("active");
+        }
+
+        // Ctrl+F aktivoi haun
+        if (e.ctrlKey && e.key === "f") {
+          e.preventDefault();
+          alert("Haku aktivoitu!");
+        }
+
+        // Ctrl+T suorittaa testit
+        if (e.ctrlKey && e.key === "t") {
+          e.preventDefault();
+          await runTests();
+        }
+      });
+
+      // Automaattinen testaus
+      async function runTests() {
+        const results = document.getElementById("testResults");
+        results.innerHTML = "<h3>Suoritetaan testejä...</h3>";
+
+        try {
+          // Testi 1: Rekisteröityminen
+          const testUser = {
+            username: "testikayttaja_" + Date.now(),
+            password: "TestiSalasana123!",
+          };
+
+          const registerResponse = await fetch("/api/auth/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(testUser),
+          });
+
+          // Testi 2: Kirjautuminen
+          const loginResponse = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(testUser),
+          });
+
+          results.innerHTML = `
+            <h3>Testitulokset:</h3>
+            <p>Rekisteröityminen: ${
+              registerResponse.ok ? "✅ Onnistui" : "❌ Epäonnistui"
+            }</p>
+            <p>Kirjautuminen: ${
+              loginResponse.ok ? "✅ Onnistui" : "❌ Epäonnistui"
+            }</p>
+          `;
+        } catch (error) {
+          results.innerHTML = `<h3>Virhe testeissä:</h3><p>${error.message}</p>`;
+        }
+      }
+    </script>
+  </bod>
+</html>

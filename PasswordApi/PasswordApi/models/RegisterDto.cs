@@ -1,6 +1,6 @@
-namespace PasswordApi.Models;
-
 using System.ComponentModel.DataAnnotations;
+
+namespace PasswordApi.Models;
 
 public class RegisterDto
 {
