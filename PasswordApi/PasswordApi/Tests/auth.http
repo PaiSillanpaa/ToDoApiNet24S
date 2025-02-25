@@ -30,3 +30,17 @@ Content-Type: application/json
 
 ### Tarkista CORS-asetukset (Options-pyyntö)
 OPTIONS https://localhost:7240/api/auth/login 
+
+### Tarkista kirjautumistila
+GET https://localhost:7240/api/auth/status
+Authorization: {{auth_token}}
+
+### Hae käyttäjälista
+GET https://localhost:7240/api/auth/users
+
+### Lukitse käyttäjä
+POST https://localhost:7240/api/auth/lock/testuser
+
+### Kirjaudu ulos
+POST https://localhost:7240/api/auth/logout
+Authorization: {{auth_token}} 
