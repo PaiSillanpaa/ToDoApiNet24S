@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PasswordApi.Models;
 using Microsoft.OpenApi.Models;
+using PasswordApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<PasswordContext>(opt =>
     opt.UseInMemoryDatabase("PasswordList"));
+builder.Services.AddScoped<PasswordHashService>();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
